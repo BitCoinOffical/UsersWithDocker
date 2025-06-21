@@ -1,0 +1,26 @@
+services:
+  go_db:       
+    image: postgres:16
+    container_name: go_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 5286
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  go-app:
+    container_name: go-app
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgres://postgres:5286@go_db:5432/postgres?sslmode=disable
+    depends_on:
+      - go_db
+
+volumes:
+  pgdata:
