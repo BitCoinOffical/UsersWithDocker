@@ -13,7 +13,10 @@ import (
 func main() {
 	db := storage.PostgreSqlInit()
 	defer db.DB.Close()
-	h := handlers.NewHandler(db)
+
+	var userStorage storage.UserStorage = db
+	h := handlers.NewHandler(userStorage)
+
 	mux := http.NewServeMux()
 	mux.Handle("/users", router.MethodRouter{
 		"GET":  h.GetUsersHandler,
@@ -24,5 +27,6 @@ func main() {
 		"PUT":    h.UpdateUserHandler,
 		"DELETE": h.DeleteUserHandler,
 	})
+
 	log.Fatal(http.ListenAndServe(":8080", middleware.JsonContentTypeMiddleware(mux)))
 }
